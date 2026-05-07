@@ -154,7 +154,6 @@ const DAYS_SHORT = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 const LMP = new Date("2026-01-01");
 const DUE = new Date("2026-10-08");
 
-// ── LOCAL DATE (fixes UTC midnight bug) ──────────────
 function localDateStr(d){
   const dt=d||new Date();
   const yr=dt.getFullYear();
@@ -182,7 +181,6 @@ function last7Days(){
   return days;
 }
 
-// ── BABY INFO ─────────────────────────────────────────
 const BABY_INFO={
   16:{e:"&#x1F951;",d:"Avocado-sized &mdash; about 4.6 inches. Fingerprints are forming!"},
   17:{e:"&#x1F350;",d:"Pear-sized &mdash; skeleton hardening from cartilage to bone!"},
@@ -220,7 +218,6 @@ const CAT_TITLES={
   partner: ["Devoted Wife","Covenant Partner","Steadfast Queen","Beloved Guardian","Sovereign Wife","High Protector","Eternal Bride"],
 };
 
-// ── SLEEP HELPERS ─────────────────────────────────────
 function sleepXP(hrs,wakeups){
   let xp=0;
   if(hrs>=8)        xp=40;
@@ -263,7 +260,6 @@ function calcSleepHours(bedStr,wakeStr){
   return Math.round((diff/60)*10)/10;
 }
 
-// ── QUEST DEFS ────────────────────────────────────────
 const QUEST_DEFS={
   mother:[
     {id:"m_hug",       t:"Good morning hugs to both boys",                   xp:10,daily:true,
@@ -331,13 +327,11 @@ const QUEST_DEFS={
     {id:"h_toys",        t:"Picked up toys and tidied living room",             xp:8, daily:true},
     {id:"h_dinner_cook", t:"Cooked a real meal for the family",                 xp:18,daily:true,
       vars:[{trigger:"h_dinner_cook",t:"Tried something different for dinner than yesterday",xp:20}]},
-    // Floors: hardwood sweep living/kitchen; bathroom sweep frequent; carpet vacuum weekly
     {id:"h_sweep_living",t:"Swept living room and kitchen hardwood floors",     xp:12,dm:[1,4],
       vars:[{trigger:"h_sweep_living",t:"Spot-swept around couch and under table",xp:13}]},
     {id:"h_sweep_bath",  t:"Swept bathroom &mdash; cat litter tracked",         xp:10,dm:[0,2,4,6],
       vars:[{trigger:"h_sweep_bath",t:"Swept bathroom and wiped around litter box base",xp:12}]},
     {id:"h_vacuum",      t:"Vacuumed all carpeted bedrooms",                    xp:15,dm:[3,6]},
-    // Laundry: Jessica folds kids clothes and regular clothes; NOT towels or work clothes (Cliff does those)
     {id:"h_laundry_wash",t:"Put a load in washer and moved to dryer",           xp:14,dm:[1,4],
       vars:[{trigger:"h_laundry_wash",t:"Second load in &mdash; keeping the laundry chain moving",xp:16}]},
     {id:"h_fold_kids",   t:"Folded and put away kids clothes",                  xp:14,dm:[2,5]},
@@ -353,7 +347,6 @@ const QUEST_DEFS={
     {id:"h_organize",    t:"Organized a drawer, closet, or space",              xp:15,dm:[2,5],minLv:2},
     {id:"h_slide",       t:"Let the house slide &mdash; dishes piled up (Penalty)",xp:-15,daily:true,penalty:true},
   ],
-  // Wellness + Faith merged: all go to wellness XP bar
   wellness:[
     {id:"w_water",      t:"Drank all 4 water bottles &mdash; 67 oz goal",    xp:15,daily:true,
       vars:[{trigger:"w_water",t:"Hydration streak! Keep it going for the baby",xp:18}]},
@@ -375,7 +368,6 @@ const QUEST_DEFS={
     {id:"w_no_eat",     t:"Skipped meals or barely ate (Penalty)",           xp:-25,daily:true,penalty:true},
     {id:"w_no_sleep",   t:"Went to bed after midnight (Penalty)",            xp:-20,daily:true,penalty:true},
     {id:"w_spiral",     t:"Anxiety spiral &mdash; let it take over (Penalty)",xp:-20,daily:true,penalty:true},
-    // Faith quests mixed in, flagged faith:true for styling only — XP goes to wellness
     {id:"fl_verse",     t:"Morning Bible verse or devotional",               xp:10,daily:true,faith:true,
       vars:[{trigger:"fl_verse",t:"Back in the Word &mdash; two mornings in a row",xp:12}]},
     {id:"fl_pray_am",   t:"Morning prayer before the day starts",            xp:12,daily:true,faith:true},
@@ -414,7 +406,6 @@ const REWARDS=[
   {cat:"career",  step:200,reward:"Nice lunch out on a Stockton office day"},
 ];
 
-// ── STATE ─────────────────────────────────────────────
 function initState(){
   return {
     xp:{mother:0,career:0,hearth:0,wellness:0,partner:0},
@@ -429,7 +420,6 @@ try{const r=localStorage.getItem(DB_KEY);if(r)S={...initState(),...JSON.parse(r)
 let activeTab="mother";
 let viewDate=new Date();
 
-// ── SAVE ─────────────────────────────────────────────
 function save(){
   localStorage.setItem(DB_KEY,JSON.stringify(S));
   const dot=document.getElementById("save-dot");
@@ -441,13 +431,11 @@ function toast(msg){
   setTimeout(()=>el.classList.remove("show"),2200);
 }
 
-// ── AUTO RESET (local date fix) ───────────────────────
 function autoReset(){
   const today=todayStr();
   if(S.lastReset===today) return;
   const newDone={};
   Object.keys(S.done||{}).forEach(k=>{
-    // Use first 10 chars to get date portion YYYY-MM-DD
     if(k.substring(0,10)===today) newDone[k]=S.done[k];
   });
   S.done=newDone;
@@ -458,7 +446,6 @@ function autoReset(){
   save();
 }
 
-// ── WEEKLY RECAP ──────────────────────────────────────
 function checkWeeklyRecap(){
   const now=new Date();
   if(now.getDay()!==0) return;
@@ -504,7 +491,6 @@ function closeRecap(wk){
   document.getElementById("modal-wrap").innerHTML="";
 }
 
-// ── VARIATION ENGINE ──────────────────────────────────
 function resolveQuest(q){
   if(!q.vars||q.vars.length===0) return {t:q.t,xp:q.xp,varied:false};
   const yd=prevDayStr(todayStr());
@@ -514,7 +500,6 @@ function resolveQuest(q){
   return {t:q.t,xp:q.xp,varied:false};
 }
 
-// ── GRACE ─────────────────────────────────────────────
 function isGrace(d){
   const dk=d instanceof Date?localDateStr(d):d;
   return !!(S.grace&&S.grace[dk]);
@@ -530,7 +515,6 @@ function toggleGrace(){
   toast("Grace Day active \u2014 no penalties today.");
 }
 
-// ── WATER ─────────────────────────────────────────────
 function toggleBottle(i){
   const dk=localDateStr(viewDate);
   if(!S.bottles) S.bottles={};
@@ -541,7 +525,6 @@ function toggleBottle(i){
   save();renderTrackers();
 }
 
-// ── SLEEP ─────────────────────────────────────────────
 function logSleep(){
   const bed=document.getElementById("sleep-bed")?document.getElementById("sleep-bed").value:"";
   const wake=document.getElementById("sleep-wake")?document.getElementById("sleep-wake").value:"";
@@ -566,7 +549,6 @@ function clearSleep(dk){
   save();renderAll();
 }
 
-// ── QUEST TOGGLE ──────────────────────────────────────
 function toggleQuest(id,xp,cat,isPenalty){
   const vCat=cat||activeTab;
   const vkDk=localDateStr(viewDate);
@@ -585,7 +567,6 @@ function toggleQuest(id,xp,cat,isPenalty){
   save();renderAll();
 }
 
-// ── CO-OP ─────────────────────────────────────────────
 function genCode(){
   const txp=Object.values(S.xp).reduce((a,b)=>a+b,0);
   const code=btoa(JSON.stringify({n:"Jessica",x:txp,l:getLevel(txp)}));
@@ -601,7 +582,6 @@ function importCode(){
   }catch{toast("Invalid code.");}
 }
 
-// ── HELPERS ───────────────────────────────────────────
 function getLevel(xp){return Math.min(Math.floor((xp||0)/150)+1,7);}
 function getTitle(arr,lv){return arr[Math.min(lv-1,arr.length-1)];}
 function getWeeks(){return Math.floor((new Date()-LMP)/(7*24*60*60*1000));}
@@ -616,7 +596,6 @@ function questLocked(q){
   return getLevel(S.xp[activeTab]||0)<q.minLv;
 }
 
-// ── RENDER ────────────────────────────────────────────
 function renderAll(){
   autoReset();
   checkWeeklyRecap();
@@ -662,7 +641,6 @@ function renderTicker(){
 function renderTrackers(){
   const dk=localDateStr(viewDate);
   const bottles=(S.bottles||{})[dk]||0;
-  // Water buttons
   let wbHtml="";
   for(let i=0;i<4;i++){
     wbHtml+=`<div class="water-btn ${i<bottles?'filled':''}" onclick="toggleBottle(${i})">&#x1F376;</div>`;
@@ -670,7 +648,6 @@ function renderTrackers(){
   document.getElementById("water-btns").innerHTML=wbHtml;
   document.getElementById("water-xp-label").innerText=bottles>=4?"+15 XP \u2713":"";
 
-  // Sleep
   const sl=(S.sleep||{})[dk];
   const sleepEl=document.getElementById("sleep-content");
   if(sl){
@@ -692,7 +669,6 @@ function renderTrackers(){
       </div>`;
   }
 
-  // Sleep history dots
   const days7=last7Days();
   let histHtml="";
   days7.forEach(d=>{
@@ -756,7 +732,6 @@ function renderQuestRow(q,dk,isFaith){
   const ob=q.office?`<span class="office-badge">Office</span>`:"";
   const wb=q.wfh?`<span class="wfh-badge">WFH</span>`:"";
   const dt=(!q.daily&&q.dm)?`<div class="quest-sub">${DAYS_FULL[viewDate.getDay()]} only</div>`:"";
-  // Faith and wellness both go to wellness XP
   const cat=activeTab;
   return `<div class="quest ${cls}" onclick="toggleQuest('${q.id}',${res.xp},'${cat}',${!!q.penalty})">
     <div><div class="quest-text">${res.t}${vb}${ob}${wb}</div>${dt}</div>
@@ -774,7 +749,6 @@ function renderApp(){
   const dow=viewDate.getDay();
   let html="";
 
-  // REWARDS
   if(activeTab==="rewards"){
     const txp=Object.values(S.xp).reduce((a,b)=>a+b,0);
     html+=`<div class="card"><div class="card-title">Legacy Goal</div>
@@ -797,7 +771,6 @@ function renderApp(){
     document.getElementById("app").innerHTML=html;return;
   }
 
-  // CO-OP
   if(activeTab==="coop"){
     const myXp=Object.values(S.xp).reduce((a,b)=>a+b,0);
     const myLv=getLevel(myXp);
@@ -823,88 +796,81 @@ function renderApp(){
       <div style="font-size:9px;color:var(--dim);margin-bottom:8px;letter-spacing:1px;text-transform:uppercase">How to sync</div>
       <div style="font-size:10px;color:var(--dim);margin-bottom:10px;line-height:1.6">Generate your code, send it to Cliff. He pastes it in his Co-Op tab. He sends you his code and you paste it below.</div>
       <textarea class="sync-box" id="sync-out" readonly placeholder="Click generate..."></textarea>
+      <button class="sync-btn" onclick="genCode()">Generate My Code</button>
+      <textarea class="sync-box" id="sync-in" placeholder="Paste Cliff&apos;s code here..."></textarea>
+      <button class="sync-btn" onclick="importCode()">Sync Cliff&apos;s Data</button>
+    </div>`;
+    document.getElementById("app").innerHTML=html;return;
+  }
 
-```
-  <button class="sync-btn" onclick="genCode()">Generate My Code</button>
-  <textarea class="sync-box" id="sync-in" placeholder="Paste Cliff&apos;s code here..."></textarea>
-  <button class="sync-btn" onclick="importCode()">Sync Cliff&apos;s Data</button>
-</div>`;
-document.getElementById("app").innerHTML=html;return;
-```
+  if(titles){
+    html+=`<div class="card">
+      <div class="card-title">Identity &mdash; ${activeTab.toUpperCase()}</div>
+      <div style="font-size:18px;font-weight:bold;color:#f0e8f8">${getTitle(titles,catLv)}</div>
+      <div class="bar"><div class="fill" style="width:${catPct}%"></div></div>
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--dim)">
+        <span>${catXp%150}/150 XP to next</span><span>Lv ${catLv} &middot; ${catXp} total</span>
+      </div>
+    </div>`;
+  }
 
-}
+  if(activeTab==="career"){
+    if(dow===3||dow===4){
+      html+=`<div style="margin:0 12px 8px;padding:9px 13px;background:rgba(96,165,250,0.08);border:1px solid rgba(96,165,250,0.25);border-radius:10px;font-size:11px;color:var(--blue)">Office day in Stockton &mdash; you got this.</div>`;
+    } else if(dow===1||dow===2||dow===5){
+      html+=`<div style="margin:0 12px 8px;padding:9px 13px;background:rgba(106,171,130,0.08);border:1px solid rgba(106,171,130,0.25);border-radius:10px;font-size:11px;color:var(--sage)">Work from home &mdash; Debbie has the boys.</div>`;
+    }
+  }
 
-// LEVEL CARD
-if(titles){
-html+=`<div class="card"> <div class="card-title">Identity &mdash; ${activeTab.toUpperCase()}</div> <div style="font-size:18px;font-weight:bold;color:#f0e8f8">${getTitle(titles,catLv)}</div> <div class="bar"><div class="fill" style="width:${catPct}%"></div></div> <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--dim)"> <span>${catXp%150}/150 XP to next</span><span>Lv ${catLv} &middot; ${catXp} total</span> </div></div>`;
-}
+  const allQ=QUEST_DEFS[activeTab]||[];
+  const visible=allQ.filter(q=>questVisible(q));
 
-// OFFICE/WFH notice for career tab
-if(activeTab===“career”){
-if(dow===3||dow===4){
-html+=`<div style="margin:0 12px 8px;padding:9px 13px;background:rgba(96,165,250,0.08);border:1px solid rgba(96,165,250,0.25);border-radius:10px;font-size:11px;color:var(--blue)">Office day in Stockton &mdash; you got this.</div>`;
-} else if(dow===1||dow===2||dow===5){
-html+=`<div style="margin:0 12px 8px;padding:9px 13px;background:rgba(106,171,130,0.08);border:1px solid rgba(106,171,130,0.25);border-radius:10px;font-size:11px;color:var(--sage)">Work from home &mdash; Debbie has the boys.</div>`;
-}
-}
+  if(activeTab==="wellness"){
+    const wellQ=visible.filter(q=>!q.faith&&!q.penalty);
+    const faithQ=visible.filter(q=>q.faith&&!q.penalty);
+    const allPen=visible.filter(q=>q.penalty);
+    const wUnlocked=wellQ.filter(q=>!questLocked(q));
+    const wLocked=wellQ.filter(q=>questLocked(q));
+    const fUnlocked=faithQ.filter(q=>!questLocked(q));
 
-// QUESTS
-const allQ=QUEST_DEFS[activeTab]||[];
-const visible=allQ.filter(q=>questVisible(q));
-
-if(activeTab===“wellness”){
-// Wellness and faith mixed together, all to wellness XP
-// Render wellness body quests first, then faith quests — same bar, no separation label
-const wellQ=visible.filter(q=>!q.faith&&!q.penalty);
-const faithQ=visible.filter(q=>q.faith&&!q.penalty);
-const allPen=visible.filter(q=>q.penalty);
-const wUnlocked=wellQ.filter(q=>!questLocked(q));
-const wLocked=wellQ.filter(q=>questLocked(q));
-const fUnlocked=faithQ.filter(q=>!questLocked(q));
-
-```
-if(wUnlocked.length||fUnlocked.length){
-  html+=`<div class="section-label">${DAYS_FULL[dow]}&apos;s Wellness &amp; Faith</div>`;
-  wUnlocked.forEach(q=>{html+=renderQuestRow(q,dk,false);});
-  fUnlocked.forEach(q=>{html+=renderQuestRow(q,dk,true);});
-}
-if(wLocked.length){
-  html+=`<div class="section-label" style="color:var(--gold)">Locked &mdash; level up to unlock</div>`;
-  wLocked.forEach(q=>{
-    html+=`<div class="quest locked"><div><div class="quest-text">${q.t}<span class="unlock-badge">Lv ${q.minLv}</span></div></div><div class="quest-xp" style="color:var(--dim)">+${q.xp}</div></div>`;
-  });
-}
-if(allPen.length){
-  html+=`<div class="section-label" style="color:var(--red)">${grace?"Grace Day &mdash; penalties waived":"Accountability"}</div>`;
-  allPen.forEach(q=>{html+=renderQuestRow(q,dk,!!q.faith);});
-}
-```
-
-} else {
-const unlocked=visible.filter(q=>!q.penalty&&!questLocked(q));
-const locked=visible.filter(q=>!q.penalty&&questLocked(q));
-const penalties=visible.filter(q=>q.penalty);
-if(unlocked.length){
-html+=`<div class="section-label">${DAYS_FULL[dow]}&apos;s Quests</div>`;
-unlocked.forEach(q=>{html+=renderQuestRow(q,dk,false);});
-}
-if(locked.length){
-html+=`<div class="section-label" style="color:var(--gold)">Locked &mdash; level up to unlock</div>`;
-locked.forEach(q=>{
-html+=`<div class="quest locked"><div><div class="quest-text">${q.t}<span class="unlock-badge">Lv ${q.minLv}</span></div></div><div class="quest-xp" style="color:var(--dim)">+${q.xp}</div></div>`;
-});
-}
-if(penalties.length){
-html+=`<div class="section-label" style="color:var(--red)">${grace?"Grace Day &mdash; penalties waived":"Accountability"}</div>`;
-penalties.forEach(q=>{html+=renderQuestRow(q,dk,false);});
-}
+    if(wUnlocked.length||fUnlocked.length){
+      html+=`<div class="section-label">${DAYS_FULL[dow]}&apos;s Wellness &amp; Faith</div>`;
+      wUnlocked.forEach(q=>{html+=renderQuestRow(q,dk,false);});
+      fUnlocked.forEach(q=>{html+=renderQuestRow(q,dk,true);});
+    }
+    if(wLocked.length){
+      html+=`<div class="section-label" style="color:var(--gold)">Locked &mdash; level up to unlock</div>`;
+      wLocked.forEach(q=>{
+        html+=`<div class="quest locked"><div><div class="quest-text">${q.t}<span class="unlock-badge">Lv ${q.minLv}</span></div></div><div class="quest-xp" style="color:var(--dim)">+${q.xp}</div></div>`;
+      });
+    }
+    if(allPen.length){
+      html+=`<div class="section-label" style="color:var(--red)">${grace?"Grace Day &mdash; penalties waived":"Accountability"}</div>`;
+      allPen.forEach(q=>{html+=renderQuestRow(q,dk,!!q.faith);});
+    }
+  } else {
+    const unlocked=visible.filter(q=>!q.penalty&&!questLocked(q));
+    const locked=visible.filter(q=>!q.penalty&&questLocked(q));
+    const penalties=visible.filter(q=>q.penalty);
+    if(unlocked.length){
+      html+=`<div class="section-label">${DAYS_FULL[dow]}&apos;s Quests</div>`;
+      unlocked.forEach(q=>{html+=renderQuestRow(q,dk,false);});
+    }
+    if(locked.length){
+      html+=`<div class="section-label" style="color:var(--gold)">Locked &mdash; level up to unlock</div>`;
+      locked.forEach(q=>{
+        html+=`<div class="quest locked"><div><div class="quest-text">${q.t}<span class="unlock-badge">Lv ${q.minLv}</span></div></div><div class="quest-xp" style="color:var(--dim)">+${q.xp}</div></div>`;
+      });
+    }
+    if(penalties.length){
+      html+=`<div class="section-label" style="color:var(--red)">${grace?"Grace Day &mdash; penalties waived":"Accountability"}</div>`;
+      penalties.forEach(q=>{html+=renderQuestRow(q,dk,false);});
+    }
+  }
+  document.getElementById("app").innerHTML=html;
 }
 
-document.getElementById(“app”).innerHTML=html;
-}
-
-setTab(“mother”);
+setTab("mother");
 </script>
-
 </body>
 </html>
